@@ -6,7 +6,6 @@ import 'app_colors.dart';
 class AppTheme {
   const AppTheme._();
 
-  // ─── Cupertino themes ─────────────────────────────────────────────────────
 
   static const CupertinoThemeData cupertinoLight = CupertinoThemeData(
     brightness: Brightness.light,
@@ -63,8 +62,6 @@ class AppTheme {
       tabLabelTextStyle: TextStyle(fontFamily: '.SF Pro Text', fontSize: 10),
     ),
   );
-
-  // ─── Material wrapper themes (for BLoC listeners etc.) ────────────────────
 
   static ThemeData get dark => _buildMaterial(Brightness.dark);
   static ThemeData get light => _buildMaterial(Brightness.light);

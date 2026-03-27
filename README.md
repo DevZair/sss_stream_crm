@@ -6,10 +6,8 @@ The app demonstrates end-to-end product thinking: authentication, chat list, mes
 
 ## Screenshots
 
-Screenshots live in [`docs/screenshots/`](docs/screenshots/).
-
-| | |
-| --- | --- |
+|                                                |                                                |
+| ---------------------------------------------- | ---------------------------------------------- |
 | ![Screenshot 1](docs/screenshots/IMG_1596.PNG) | ![Screenshot 2](docs/screenshots/IMG_1597.PNG) |
 | ![Screenshot 3](docs/screenshots/IMG_1598.PNG) | ![Screenshot 4](docs/screenshots/IMG_1599.PNG) |
 | ![Screenshot 5](docs/screenshots/IMG_1600.PNG) | ![Screenshot 6](docs/screenshots/IMG_1601.PNG) |
@@ -37,16 +35,16 @@ Screenshots live in [`docs/screenshots/`](docs/screenshots/).
 
 ## Tech stack
 
-| Area | Packages / services |
-| --- | --- |
-| UI & state | Flutter, `flutter_bloc`, `equatable`, `google_fonts`, `cupertino_icons` |
-| Networking | `dio`, custom interceptors |
-| Local storage | `shared_preferences` |
-| Firebase | `firebase_core`, `firebase_auth`, `cloud_firestore`, `firebase_storage`, `firebase_messaging`, `firebase_app_check` |
-| Calls | `agora_rtc_engine`, `connectycube_flutter_call_kit` |
-| Media | `image_picker`, `file_picker`, `record`, `audioplayers` |
-| Notifications | `flutter_local_notifications` |
-| Other | `permission_handler`, `uuid` |
+| Area          | Packages / services                                                                                                 |
+| ------------- | ------------------------------------------------------------------------------------------------------------------- |
+| UI & state    | Flutter, `flutter_bloc`, `equatable`, `google_fonts`, `cupertino_icons`                                             |
+| Networking    | `dio`, custom interceptors                                                                                          |
+| Local storage | `shared_preferences`                                                                                                |
+| Firebase      | `firebase_core`, `firebase_auth`, `cloud_firestore`, `firebase_storage`, `firebase_messaging`, `firebase_app_check` |
+| Calls         | `agora_rtc_engine`, `connectycube_flutter_call_kit`                                                                 |
+| Media         | `image_picker`, `file_picker`, `record`, `audioplayers`                                                             |
+| Notifications | `flutter_local_notifications`                                                                                       |
+| Other         | `permission_handler`, `uuid`                                                                                        |
 
 ## Architecture
 
