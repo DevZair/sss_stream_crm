@@ -1,3 +1,7 @@
+import org.gradle.api.tasks.compile.JavaCompile
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
 allprojects {
     repositories {
         google()
@@ -17,6 +21,25 @@ subprojects {
 }
 subprojects {
     project.evaluationDependsOn(":app")
+}
+
+subprojects {
+    tasks.withType<JavaCompile>().configureEach {
+        if ("-Xlint:-options" !in options.compilerArgs) {
+            options.compilerArgs.add("-Xlint:-options")
+        }
+    }
+}
+
+// connectycube_flutter_call_kit тянет Kotlin JVM 21 при Java 17 — выравниваем только этот модуль.
+gradle.projectsEvaluated {
+    rootProject.subprojects
+        .find { it.name == "connectycube_flutter_call_kit" }
+        ?.tasks
+        ?.withType<KotlinCompile>()
+        ?.configureEach {
+            compilerOptions.jvmTarget.set(JvmTarget.JVM_17)
+        }
 }
 
 tasks.register<Delete>("clean") {

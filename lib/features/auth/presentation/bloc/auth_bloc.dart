@@ -4,18 +4,19 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../domain/usecases/login_usecase.dart';
+import '../../../../service/utils/error_messages.dart';
+import '../../domain/repositories/auth_repository.dart';
 
 part 'auth_event.dart';
 part 'auth_state.dart';
 
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
-  AuthBloc({required this.loginUseCase}) : super(const AuthState()) {
+  AuthBloc({required this.authRepository}) : super(const AuthState()) {
     on<AuthLoginSubmitted>(_onLoginSubmitted);
     on<AuthTogglePasswordVisibility>(_onTogglePasswordVisibility);
   }
 
-  final LoginUseCase loginUseCase;
+  final AuthRepository authRepository;
 
   Future<void> _onLoginSubmitted(
     AuthLoginSubmitted event,
@@ -32,7 +33,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       emit(
         state.copyWith(
           status: AuthStatus.failure,
-          errorMessage: 'Заполните все поля и укажите пароль не короче 6 символов.',
+          errorMessage:
+              'Заполните все поля и укажите пароль не короче 6 символов.',
         ),
       );
       return;
@@ -41,13 +43,11 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     emit(state.copyWith(status: AuthStatus.loading, errorMessage: ''));
 
     try {
-      await loginUseCase(
-        LoginParams(
-          username: username,
-          password: event.password,
-          fullName: fullName,
-          userId: userId,
-        ),
+      await authRepository.login(
+        username: username,
+        password: event.password,
+        fullName: fullName,
+        userId: userId,
       );
 
       emit(state.copyWith(status: AuthStatus.success));
@@ -56,7 +56,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       emit(
         state.copyWith(
           status: AuthStatus.failure,
-          errorMessage: Error.safeToString(error),
+          errorMessage: friendlyError(error),
         ),
       );
     }

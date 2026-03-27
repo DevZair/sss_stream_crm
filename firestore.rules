@@ -1,0 +1,121 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isCurrentUser(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function isChatParticipant() {
+      return isSignedIn()
+        && request.auth.uid in resource.data.participantIds;
+    }
+
+    function isNewChatParticipant() {
+      return isSignedIn()
+        && request.auth.uid in request.resource.data.participantIds;
+    }
+
+    function isParticipant(chatId) {
+      return isSignedIn()
+        && request.auth.uid in get(/databases/$(database)/documents/chats/$(chatId)).data.participantIds;
+    }
+
+    // direct: участник пары может читать документ, даже если вышел из participantIds.
+    function isDirectPeerForResource() {
+      return resource.data.get('type', '') == 'direct' && (
+        (
+          resource.data.peerIds is list
+          && resource.data.peerIds.size() == 2
+          && request.auth.uid in resource.data.peerIds
+        )
+        || (
+          (!('peerIds' in resource.data))
+          && resource.data.displayNameByUser is map
+          && resource.data.displayNameByUser[request.auth.uid] != null
+        )
+      );
+    }
+
+    // Вернуть себя в direct: было 1 участник, стало 2, тот же состав что peerIds.
+    function isDirectRejoinUpdate() {
+      return resource.data.get('type', '') == 'direct'
+        && resource.data.participantIds is list
+        && resource.data.participantIds.size() == 1
+        && request.resource.data.participantIds is list
+        && request.resource.data.participantIds.size() == 2
+        && request.resource.data.participantIds.hasAll(resource.data.participantIds)
+        && request.auth.uid in request.resource.data.participantIds
+        && (
+          (
+            resource.data.peerIds is list
+            && resource.data.peerIds.size() == 2
+            && request.resource.data.peerIds is list
+            && request.resource.data.peerIds.size() == 2
+            && request.resource.data.peerIds[0] == resource.data.peerIds[0]
+            && request.resource.data.peerIds[1] == resource.data.peerIds[1]
+            && request.resource.data.participantIds.hasAll(resource.data.peerIds)
+          )
+          || (
+            (!('peerIds' in resource.data))
+            && request.resource.data.peerIds is list
+            && request.resource.data.peerIds.size() == 2
+            && request.resource.data.participantIds.hasAll(request.resource.data.peerIds)
+            && request.resource.data.peerIds.hasAll(request.resource.data.participantIds)
+            && resource.data.displayNameByUser is map
+            && resource.data.displayNameByUser[request.auth.uid] != null
+          )
+        );
+    }
+
+    match /users/{userId} {
+      allow read: if isSignedIn();
+      allow create, update, delete: if isCurrentUser(userId);
+    }
+
+    match /chats/{chatId} {
+      allow read: if isSignedIn() && (
+        resource == null
+        || request.auth.uid in resource.data.participantIds
+        || isDirectPeerForResource()
+      );
+      allow create: if isSignedIn() && request.resource.data.participantIds is list && request.auth.uid in request.resource.data.participantIds;
+      allow update: if isSignedIn() && (
+        isChatParticipant()
+        || isDirectRejoinUpdate()
+      );
+      allow delete: if isChatParticipant();
+
+      match /messages/{messageId} {
+        allow read: if isParticipant(chatId);
+        allow create: if isParticipant(chatId)
+          && request.resource.data.senderId == request.auth.uid;
+        allow update, delete: if isParticipant(chatId)
+          && resource.data.senderId == request.auth.uid;
+      }
+    }
+
+    match /video_calls/{callId} {
+      allow read: if isSignedIn()
+        && (resource == null || request.auth.uid in resource.data.participantIds);
+      allow create: if isSignedIn()
+        && request.resource.data.createdBy == request.auth.uid
+        && request.auth.uid in request.resource.data.participantIds;
+      allow update: if isSignedIn()
+        && request.auth.uid in resource.data.participantIds;
+      allow delete: if false;
+    }
+
+    match /users/{userId}/incoming_video_calls/{callId} {
+      allow read, delete: if isCurrentUser(userId);
+      allow create: if isSignedIn()
+        && request.resource.data.callerId == request.auth.uid
+        && userId != request.auth.uid;
+      allow update: if false;
+    }
+  }
+}

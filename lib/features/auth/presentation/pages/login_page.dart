@@ -1,10 +1,11 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/widgets/app_text_field.dart';
+import '../../../../core/widgets/ios_action_sheet.dart';
 import '../../../../core/widgets/primary_button.dart';
-import '../../../chat/presentation/pages/chat_list_page.dart';
+import '../../../home/presentation/root_tabs.dart';
 import '../bloc/auth_bloc.dart';
 
 class LoginPage extends StatefulWidget {
@@ -15,10 +16,10 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  final TextEditingController _usernameController = TextEditingController();
-  final TextEditingController _fullNameController = TextEditingController();
-  final TextEditingController _userIdController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
+  final _usernameController = TextEditingController();
+  final _fullNameController = TextEditingController();
+  final _userIdController = TextEditingController();
+  final _passwordController = TextEditingController();
 
   @override
   void dispose() {
@@ -41,78 +42,140 @@ class _LoginPageState extends State<LoginPage> {
       listener: (context, state) {
         if (state.status == AuthStatus.failure &&
             state.errorMessage.isNotEmpty) {
-          _showSnack(context, state.errorMessage, isError: true);
+          showIosAlert<void>(
+            context: context,
+            title: 'Ошибка входа',
+            message: state.errorMessage,
+            actions: [
+              CupertinoDialogAction(
+                isDefaultAction: true,
+                child: const Text('OK'),
+                onPressed: () => Navigator.of(context).pop(),
+              ),
+            ],
+          );
         } else if (state.status == AuthStatus.success) {
           Navigator.of(context).pushReplacement(
-            MaterialPageRoute<void>(builder: (_) => const ChatListPage()),
+            CupertinoPageRoute<void>(builder: (_) => const RootTabs()),
           );
         }
       },
-      child: GestureDetector(
-        onTap: () => FocusScope.of(context).unfocus(),
-        child: Scaffold(
-          body: SafeArea(
+      child: CupertinoPageScaffold(
+        child: GestureDetector(
+          onTap: () => FocusScope.of(context).unfocus(),
+          child: SafeArea(
             child: Center(
               child: SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(horizontal: 24),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24,
+                  vertical: 32,
+                ),
                 child: BlocBuilder<AuthBloc, AuthState>(
                   builder: (context, state) {
                     final isLoading = state.status == AuthStatus.loading;
+                    final isDark =
+                        CupertinoTheme.brightnessOf(context) == Brightness.dark;
 
                     return ConstrainedBox(
                       constraints: const BoxConstraints(maxWidth: 440),
                       child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
-                            'Войти',
-                            style: Theme.of(context).textTheme.headlineSmall
-                                ?.copyWith(fontWeight: FontWeight.w800),
+                          // ── Logo ──────────────────────────────────────────
+                          Center(
+                            child: Container(
+                              width: 80,
+                              height: 80,
+                              decoration: BoxDecoration(
+                                color: AppColors.primary,
+                                borderRadius: BorderRadius.circular(22),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: AppColors.primary.withOpacity(0.4),
+                                    blurRadius: 20,
+                                    offset: const Offset(0, 8),
+                                  ),
+                                ],
+                              ),
+                              child: const Icon(
+                                CupertinoIcons.chat_bubble_2_fill,
+                                color: CupertinoColors.white,
+                                size: 40,
+                              ),
+                            ),
                           ),
-                          const SizedBox(height: 24),
+                          const SizedBox(height: 20),
+                          Center(
+                            child: Text(
+                              'Войти',
+                              style: CupertinoTheme.of(
+                                context,
+                              ).textTheme.navLargeTitleTextStyle,
+                            ),
+                          ),
+                          Center(
+                            child: Text(
+                              'Безопасный мессенджер',
+                              style: TextStyle(
+                                fontSize: 15,
+                                color: isDark
+                                    ? AppColors.textSecondary
+                                    : AppColors.lightTextSecondary,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 36),
+
+                          // ── Fields ────────────────────────────────────────
                           AppTextField(
                             label: 'Логин',
-                            hint: 'username или телефон',
+                            hint: 'уникальный никнейм',
                             controller: _usernameController,
                             keyboardType: TextInputType.emailAddress,
+                            textInputAction: TextInputAction.next,
                             onChanged: (_) => setState(() {}),
                           ),
-                          const SizedBox(height: 16),
+                          const SizedBox(height: 14),
                           AppTextField(
                             label: 'Имя',
                             hint: 'Как вас называть',
                             controller: _fullNameController,
                             keyboardType: TextInputType.name,
+                            textInputAction: TextInputAction.next,
                             onChanged: (_) => setState(() {}),
                           ),
-                          const SizedBox(height: 16),
+                          const SizedBox(height: 14),
                           AppTextField(
                             label: 'ID пользователя',
                             hint: 'Ваш внутренний ID',
                             controller: _userIdController,
-                            keyboardType: TextInputType.text,
+                            textInputAction: TextInputAction.next,
                             onChanged: (_) => setState(() {}),
                           ),
-                          const SizedBox(height: 16),
+                          const SizedBox(height: 14),
                           AppTextField(
                             label: 'Пароль',
                             hint: '••••••••',
                             controller: _passwordController,
                             obscureText: state.obscurePassword,
-                            suffix: IconButton(
-                              onPressed: () => context.read<AuthBloc>().add(
+                            textInputAction: TextInputAction.done,
+                            suffix: GestureDetector(
+                              onTap: () => context.read<AuthBloc>().add(
                                 const AuthTogglePasswordVisibility(),
                               ),
-                              icon: Icon(
+                              child: Icon(
                                 state.obscurePassword
-                                    ? Icons.visibility_outlined
-                                    : Icons.visibility_off_outlined,
+                                    ? CupertinoIcons.eye
+                                    : CupertinoIcons.eye_slash,
                                 color: AppColors.textSecondary,
+                                size: 20,
                               ),
                             ),
                             onChanged: (_) => setState(() {}),
                           ),
-                          const SizedBox(height: 20),
+                          const SizedBox(height: 28),
+
+                          // ── Button ────────────────────────────────────────
                           PrimaryButton(
                             label: 'Войти',
                             isLoading: isLoading,
@@ -128,11 +191,14 @@ class _LoginPageState extends State<LoginPage> {
                               );
                             },
                           ),
+
+                          // ── Error ─────────────────────────────────────────
                           if (state.errorMessage.isNotEmpty &&
                               state.status == AuthStatus.failure) ...[
-                            const SizedBox(height: 12),
+                            const SizedBox(height: 16),
                             _ErrorBanner(message: state.errorMessage),
                           ],
+                          const SizedBox(height: 24),
                         ],
                       ),
                     );
@@ -145,34 +211,10 @@ class _LoginPageState extends State<LoginPage> {
       ),
     );
   }
-
-  void _showSnack(
-    BuildContext context,
-    String message, {
-    required bool isError,
-  }) {
-    ScaffoldMessenger.of(context).hideCurrentSnackBar();
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        backgroundColor: isError ? AppColors.error : AppColors.surface,
-        content: Row(
-          children: [
-            Icon(
-              isError ? Icons.error_outline : Icons.check_circle_outline,
-              color: Colors.white,
-            ),
-            const SizedBox(width: 8),
-            Expanded(child: Text(message)),
-          ],
-        ),
-      ),
-    );
-  }
 }
 
 class _ErrorBanner extends StatelessWidget {
   const _ErrorBanner({required this.message});
-
   final String message;
 
   @override
@@ -180,21 +222,26 @@ class _ErrorBanner extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: AppColors.error.withOpacity(0.08),
-        border: Border.all(color: AppColors.error.withOpacity(0.5)),
-        borderRadius: BorderRadius.circular(14),
+        color: AppColors.error.withValues(alpha: 0.10),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: AppColors.error.withValues(alpha: 0.4)),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Icon(Icons.info_outline, color: AppColors.error),
+          const Icon(
+            CupertinoIcons.exclamationmark_circle,
+            color: AppColors.error,
+            size: 18,
+          ),
           const SizedBox(width: 8),
           Expanded(
             child: Text(
               message,
               style: const TextStyle(
                 color: AppColors.error,
-                fontWeight: FontWeight.w600,
+                fontWeight: FontWeight.w500,
+                fontSize: 14,
               ),
             ),
           ),

@@ -1,24 +1,38 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 
 class AppColors {
   const AppColors._();
 
-  static const Color primary = Color(0xFF0F9BCE);
-  static const Color accent = Color(0xFF0BD889);
-  static const Color background = Color(0xFF0A1624);
-  static const Color surface = Color(0xFF112133);
-  static const Color surfaceSecondary = Color(0xFF0D1C2D);
-  static const Color border = Color(0xFF1E2F43);
-  static const Color textPrimary = Color(0xFFE7EDF7);
-  static const Color textSecondary = Color(0xFF9FB2C7);
-  static const Color error = Color(0xFFE85C5C);
-  static const Color success = Color(0xFF30D158);
+  // iOS system blue
+  static const Color primary = Color(0xFF007AFF);
+  // iOS system green
+  static const Color accent = Color(0xFF34C759);
+  // My-message bubble (iMessage blue)
+  static const Color myBubble = Color(0xFF007AFF);
+  // Their-message bubble
+  static const Color theirBubble = Color(0xFF3A3A3C);
+  static const Color theirBubbleLight = Color(0xFFE5E5EA);
 
-  // Light palette
-  static const Color lightBackground = Color(0xFFF6F8FC);
-  static const Color lightSurface = Colors.white;
-  static const Color lightSurfaceSecondary = Color(0xFFF0F4FA);
-  static const Color lightBorder = Color(0xFFE0E6EF);
-  static const Color lightTextPrimary = Color(0xFF0B1A30);
-  static const Color lightTextSecondary = Color(0xFF4C5D73);
+  // --- Dark palette (iOS dark) ---
+  static const Color background = Color(0xFF000000);
+  static const Color surface = Color(0xFF1C1C1E);
+  static const Color surfaceSecondary = Color(0xFF2C2C2E);
+  static const Color surfaceTertiary = Color(0xFF3A3A3C);
+  static const Color border = Color(0xFF38383A);
+  static const Color separator = Color(0xFF38383A);
+  static const Color textPrimary = Color(0xFFFFFFFF);
+  static const Color textSecondary = Color(0xFF8E8E93);
+  static const Color error = Color(0xFFFF3B30);
+  static const Color success = Color(0xFF34C759);
+  static const Color warning = Color(0xFFFF9F0A);
+
+  // --- Light palette (iOS light) ---
+  static const Color lightBackground = Color(0xFFF2F2F7);
+  static const Color lightSurface = CupertinoColors.white;
+  static const Color lightSurfaceSecondary = Color(0xFFE5E5EA);
+  static const Color lightSurfaceTertiary = Color(0xFFD1D1D6);
+  static const Color lightBorder = Color(0xFFC6C6C8);
+  static const Color lightSeparator = Color(0xFFC6C6C8);
+  static const Color lightTextPrimary = Color(0xFF000000);
+  static const Color lightTextSecondary = Color(0xFF8E8E93);
 }

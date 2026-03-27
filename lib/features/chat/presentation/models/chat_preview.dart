@@ -13,6 +13,10 @@ class ChatPreview {
     this.isGroup = false,
     this.avatarUrl,
     this.lastMessageAt,
+    this.lastMessageSenderId,
+    this.chatType = '',
+    this.directPeerUid,
+    this.externalContactDigits,
   });
 
   final String chatId;
@@ -27,6 +31,18 @@ class ChatPreview {
   final String? avatarUrl;
   final DateTime? lastMessageAt;
 
+  /// Firestore `chats.lastMessageSenderId` (для звука только на входящих).
+  final String? lastMessageSenderId;
+
+  /// Firestore `chats.type`: `direct`, `external`, etc.
+  final String chatType;
+
+  /// For `direct` chats — Firebase UID of the other participant.
+  final String? directPeerUid;
+
+  /// Для `external`: только цифры номера (из `externalContactPhone`) для поиска в `users`.
+  final String? externalContactDigits;
+
   ChatPreview copyWith({
     String? chatId,
     String? name,
@@ -39,6 +55,10 @@ class ChatPreview {
     bool? isGroup,
     String? avatarUrl,
     DateTime? lastMessageAt,
+    String? lastMessageSenderId,
+    String? chatType,
+    String? directPeerUid,
+    String? externalContactDigits,
   }) {
     return ChatPreview(
       chatId: chatId ?? this.chatId,
@@ -52,8 +72,25 @@ class ChatPreview {
       isGroup: isGroup ?? this.isGroup,
       avatarUrl: avatarUrl ?? this.avatarUrl,
       lastMessageAt: lastMessageAt ?? this.lastMessageAt,
+      lastMessageSenderId: lastMessageSenderId ?? this.lastMessageSenderId,
+      chatType: chatType ?? this.chatType,
+      directPeerUid: directPeerUid ?? this.directPeerUid,
+      externalContactDigits:
+          externalContactDigits ?? this.externalContactDigits,
     );
   }
+
+  bool get canStartVideoCall =>
+      chatType == 'direct' &&
+      directPeerUid != null &&
+      directPeerUid!.isNotEmpty;
+
+  /// Есть шанс звонка: direct с peer или external с номером (ищем зарег. пользователя).
+  bool get canAttemptVideoCall =>
+      canStartVideoCall ||
+      (chatType == 'external' &&
+          externalContactDigits != null &&
+          externalContactDigits!.length >= 6);
 
   String get initials {
     final parts = name.split(' ');

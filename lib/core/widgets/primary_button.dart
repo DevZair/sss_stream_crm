@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 
 import '../theme/app_colors.dart';
 
@@ -20,33 +20,41 @@ class PrimaryButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final child = isLoading
-        ? const SizedBox(
-            width: 22,
-            height: 22,
-            child: CircularProgressIndicator(
-              strokeWidth: 2.8,
-              valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-            ),
-          )
+    final isInactive = disabled || isLoading;
+
+    Widget child = isLoading
+        ? const CupertinoActivityIndicator(color: CupertinoColors.white)
         : Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               if (icon != null) ...[
-                Icon(icon, size: 18),
+                Icon(icon, size: 18, color: CupertinoColors.white),
                 const SizedBox(width: 8),
               ],
-              Text(label),
+              Text(
+                label,
+                style: const TextStyle(
+                  color: CupertinoColors.white,
+                  fontSize: 17,
+                  fontWeight: FontWeight.w600,
+                  letterSpacing: -0.3,
+                ),
+              ),
             ],
           );
 
-    return ElevatedButton(
-      onPressed: disabled || isLoading ? null : onPressed,
-      style: ElevatedButton.styleFrom(
-        backgroundColor: disabled ? AppColors.border : AppColors.primary,
-        foregroundColor: Colors.white,
+    return SizedBox(
+      width: double.infinity,
+      height: 50,
+      child: CupertinoButton(
+        color: isInactive
+            ? AppColors.primary.withValues(alpha: 0.4)
+            : AppColors.primary,
+        borderRadius: BorderRadius.circular(14),
+        padding: EdgeInsets.zero,
+        onPressed: isInactive ? null : onPressed,
+        child: child,
       ),
-      child: child,
     );
   }
 }

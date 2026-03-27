@@ -15,24 +15,22 @@ class AuthRepositoryImpl implements AuthRepository {
     required String fullName,
     required String userId,
   }) async {
-    final response = await remoteDataSource.login(
+    final session = await remoteDataSource.login(
       username: username,
       password: password,
       fullName: fullName,
       userId: userId,
     );
 
-    if (response.accessToken.isEmpty) {
-      throw const FormatException('Токен не получен от сервера');
+    if (session.accessToken.isEmpty) {
+      throw const FormatException('Токен Firebase не получен');
     }
 
-    if (response.accessToken.isNotEmpty) {
-      DBService.accessToken = response.accessToken;
-    }
-    if (response.refreshToken.isNotEmpty) {
-      DBService.refreshToken = response.refreshToken;
+    DBService.accessToken = session.accessToken;
+    if (session.refreshToken.isNotEmpty) {
+      DBService.refreshToken = session.refreshToken;
     }
 
-    return response.toEntity();
+    return session;
   }
 }

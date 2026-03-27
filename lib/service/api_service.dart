@@ -179,9 +179,9 @@ class ApiService {
     final convert = const JsonEncoder().cast<Object?, String?>().convert(
       data ?? {},
     );
-    return const JsonDecoder()
-        .cast<String, Map<String, Object?>>()
-        .convert(convert ?? '{}');
+    return const JsonDecoder().cast<String, Map<String, Object?>>().convert(
+      convert ?? '{}',
+    );
   }
 
   static Never _throwApiError(
@@ -207,10 +207,7 @@ class ApiService {
 
     final detail = _extractDetail(json);
     if (detail != null && detail.isNotEmpty) {
-      throw Error.throwWithStackTrace(
-        detail,
-        stackTrace ?? StackTrace.current,
-      );
+      throw Error.throwWithStackTrace(detail, stackTrace ?? StackTrace.current);
     }
 
     throwError();

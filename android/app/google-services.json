@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "79102621661",
+    "project_id": "sss-chatapp",
+    "storage_bucket": "sss-chatapp.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:79102621661:android:593f5f09c2e014a5dc6834",
+        "android_client_info": {
+          "package_name": "kz.sssWatsapp.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA4mNrGP8rizFcJjFsiH2ODiyGjMTlCoow"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

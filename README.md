@@ -1,79 +1,88 @@
-# Secure Chat (Flutter)
+# Secure Chat (SSS WhatsApp)
 
-A WhatsApp-style mobile chat client built with Flutter as a portfolio project.
+A WhatsApp-style mobile chat client built with **Flutter**. It combines a REST API for chats with **Firebase** (authentication helpers, Firestore user data, Cloud Storage, FCM) and **Agora** for video calls, plus native-style UI (Cupertino-first) and BLoC state management.
 
-The app demonstrates end-to-end product thinking: authentication flow, chat list, real-time-like messaging UX, media sharing, voice messages, API integration, and error handling.
+The app demonstrates end-to-end product thinking: authentication, chat list, messaging UX, media and voice messages, push notifications, and video calling.
+
+## Screenshots
+
+Screenshots live in [`docs/screenshots/`](docs/screenshots/).
+
+| | |
+| --- | --- |
+| ![Screenshot 1](docs/screenshots/IMG_1596.PNG) | ![Screenshot 2](docs/screenshots/IMG_1597.PNG) |
+| ![Screenshot 3](docs/screenshots/IMG_1598.PNG) | ![Screenshot 4](docs/screenshots/IMG_1599.PNG) |
+| ![Screenshot 5](docs/screenshots/IMG_1600.PNG) | ![Screenshot 6](docs/screenshots/IMG_1601.PNG) |
+| ![Screenshot 7](docs/screenshots/IMG_1602.PNG) | ![Screenshot 8](docs/screenshots/IMG_1603.PNG) |
 
 ## Why this project
 
-This project was built to show practical Flutter engineering skills in a realistic messaging app scenario:
+- Feature-based layout (`auth`, `chat`, `call`, `home`, `settings`, `core`, `service`)
+- API-first chat backend with optional **mock auth** for demos
+- **Firebase** integration for messaging, storage, and session hydration
+- **Video calls** via Agora and ConnectyCube Call Kit hooks
+- Stateful UI with **BLoC** and async/error handling
+- Mobile capabilities: camera, gallery, file picker, microphone, local notifications
 
-- Clean feature-based structure (`auth`, `chat`, `core`, `service`)
-- API-first implementation with a mock fallback for demos
-- Stateful UI with BLoC and robust async/error states
-- Mobile-native features (camera, gallery, file picker, microphone, audio playback)
+## Key features
 
-## Key Features
+- **Authentication**: login with validation (username, full name, user ID, password); optional mock mode
+- **Session**: tokens and user profile fields persisted locally (`SharedPreferences` + Firebase session sync)
+- **Chat list**: search, unread filter, pin/unpin, swipe actions
+- **Messaging**: text, image, file, and voice messages; edit/delete messages; conversation actions
+- **Calls**: video calling (Agora) with incoming-call handling integration
+- **Notifications**: FCM and local notifications for data messages and call flows
+- **Settings** and root navigation with themed light/dark UI
+- **Permissions**: guided flow for camera, microphone, and media library
 
-- Authentication: login with validation (username, full name, user ID, password)
-- Session management: token persistence with `SharedPreferences`
-- Chat list: search, unread filter, pin/unpin (up to 3), swipe-to-archive
-- New conversation: start chat by phone number
-- Messaging: send text, image, file, and voice messages
-- Media flow: gallery picker, camera capture, and file picker integration
-- Voice UX: record, send, and play audio messages in-app
-- Message actions: edit and delete messages
-- Chat actions: delete conversation
-- Reliability: pull-to-refresh + user-friendly error states
-- Permissions: guided access flow for camera, microphone, and media library
+## Tech stack
 
-## Tech Stack
-
-- Flutter (Dart)
-- `flutter_bloc` + `equatable`
-- `dio` for HTTP layer
-- `shared_preferences` for local persistence
-- `image_picker`, `file_picker`
-- `record`, `audioplayers`
-- `permission_handler`
-- `google_fonts` (Urbanist)
+| Area | Packages / services |
+| --- | --- |
+| UI & state | Flutter, `flutter_bloc`, `equatable`, `google_fonts`, `cupertino_icons` |
+| Networking | `dio`, custom interceptors |
+| Local storage | `shared_preferences` |
+| Firebase | `firebase_core`, `firebase_auth`, `cloud_firestore`, `firebase_storage`, `firebase_messaging`, `firebase_app_check` |
+| Calls | `agora_rtc_engine`, `connectycube_flutter_call_kit` |
+| Media | `image_picker`, `file_picker`, `record`, `audioplayers` |
+| Notifications | `flutter_local_notifications` |
+| Other | `permission_handler`, `uuid` |
 
 ## Architecture
 
-The codebase follows a layered, feature-first approach:
+Layered, feature-first structure:
 
-- `presentation`: pages, widgets, BLoC state management
-- `domain`: entities, repository contracts, use cases
-- `data`: remote data sources, repository implementations, DTO mapping
-- `service`: API client, storage service, interceptors, error mapping
-- `core`: theme, constants, shared UI components
+- **`presentation`**: pages, widgets, BLoC
+- **`domain`**: entities, repository contracts
+- **`data`**: remote data sources, repository implementations
+- **`service`**: API client, DB/session helpers, Firebase bootstrap, notifications
+- **`core`**: theme, constants, shared widgets
 
-## Project Structure
+### Project structure (overview)
 
 ```text
 lib/
   core/
-    constants/
-    theme/
-    widgets/
   features/
     auth/
-      data/
-      domain/
-      presentation/
     chat/
-      data/
-      domain/
-      presentation/
+    call/
+    home/
+    settings/
   service/
-    api_service.dart
-    db_service.dart
-    utils/
   app.dart
   main.dart
+  firebase_options.dart
 ```
 
-## Getting Started
+## Getting started
+
+### Prerequisites
+
+- [Flutter SDK](https://docs.flutter.dev/get-started/install) (Dart ^3.10)
+- Xcode (iOS) and/or Android Studio (Android)
+- Firebase project with iOS/Android apps configured (see below)
+- Agora / ConnectyCube credentials if you use video calling
 
 ### 1) Install dependencies
 
@@ -81,30 +90,43 @@ lib/
 flutter pub get
 ```
 
-### 2) Configure API
+### 2) Firebase
 
-Update `lib/core/constants/api_constants.dart`:
+The repo expects Firebase config files in the usual locations:
 
-- `baseUrl`
-- `apiToken` (optional, if your backend requires it)
+- **Android**: `android/app/google-services.json`
+- **iOS**: `ios/Runner/GoogleService-Info.plist`
 
-### 3) Run the app
+Regenerate `lib/firebase_options.dart` with FlutterFire if you use a new Firebase project:
+
+```bash
+dart run flutterfire configure
+```
+
+Firestore rules, indexes, and Storage rules are under `firestore.rules`, `firestore.indexes.json`, and `storage.rules` at the repo root (adjust for your environment).
+
+### 3) API (chat backend)
+
+Update [`lib/core/constants/api_constants.dart`](lib/core/constants/api_constants.dart):
+
+- `baseUrl` — REST API host
+- `apiToken` — if your backend requires a static token
+
+### 4) Run the app
 
 ```bash
 flutter run
 ```
 
-## Demo Mode (No Backend Required)
+### Demo mode (no real auth backend)
 
-You can run login in demo mode using a mock auth repository:
+Uses a mock auth repository—useful for UI demos when the API is down:
 
 ```bash
 flutter run --dart-define=USE_MOCK_AUTH=true
 ```
 
-This is useful for portfolio demos when the backend is unavailable.
-
-## Backend Endpoints Used
+## Backend endpoints (chat API)
 
 - `POST /api/auth/login`
 - `GET /api/chats`
@@ -117,15 +139,14 @@ This is useful for portfolio demos when the backend is unavailable.
 - `DELETE /api/chats/{chatId}/messages/{messageRef}`
 - `DELETE /api/chats/{chatId}`
 
-## What this portfolio project demonstrates
+## Tests
 
-- Building non-trivial Flutter UI with polished interactions
-- Integrating with REST APIs and mapping inconsistent payloads safely
-- Managing async state and failures with predictable UX
-- Working with platform permissions and native device capabilities
-- Organizing code for scalability and maintainability
+```bash
+flutter test
+```
 
----
+## License / portfolio
 
-If you are reviewing this as part of my portfolio, I can also provide a short architecture walkthrough and a live demo flow.
-# sss_stream_crm
+Private / portfolio use unless you add an explicit license.
+
+If you are reviewing this as part of a portfolio, I can provide a short architecture walkthrough and a live demo flow.

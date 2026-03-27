@@ -48,9 +48,7 @@ String _formatRequestData(Object? data) {
         .map((entry) => '${entry.key}=${entry.value}')
         .toList();
     final files = data.files
-        .map(
-          (entry) => '${entry.key}:${entry.value.filename ?? 'unnamed'}',
-        )
+        .map((entry) => '${entry.key}:${entry.value.filename ?? 'unnamed'}')
         .toList();
     return 'FormData{fields: $fields, files: $files}';
   }

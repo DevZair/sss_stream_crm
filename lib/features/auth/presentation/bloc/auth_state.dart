@@ -1,6 +1,11 @@
 part of 'auth_bloc.dart';
 
-enum AuthStatus { initial, loading, success, failure }
+enum AuthStatus {
+  initial,
+  loading,
+  success,
+  failure,
+}
 
 class AuthState extends Equatable {
   const AuthState({
@@ -26,5 +31,9 @@ class AuthState extends Equatable {
   }
 
   @override
-  List<Object?> get props => [status, errorMessage, obscurePassword];
+  List<Object> get props => [
+        status,
+        errorMessage,
+        obscurePassword,
+      ];
 }

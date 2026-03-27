@@ -1,197 +1,111 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 import 'app_colors.dart';
 
 class AppTheme {
   const AppTheme._();
 
-  static ThemeData get dark {
-    final textTheme = GoogleFonts.urbanistTextTheme();
+  // ─── Cupertino themes ─────────────────────────────────────────────────────
 
+  static const CupertinoThemeData cupertinoLight = CupertinoThemeData(
+    brightness: Brightness.light,
+    primaryColor: AppColors.primary,
+    scaffoldBackgroundColor: AppColors.lightBackground,
+    barBackgroundColor: CupertinoColors.systemBackground,
+    textTheme: CupertinoTextThemeData(
+      primaryColor: AppColors.primary,
+      textStyle: TextStyle(
+        fontFamily: '.SF Pro Text',
+        color: AppColors.lightTextPrimary,
+        fontSize: 17,
+      ),
+      navTitleTextStyle: TextStyle(
+        fontFamily: '.SF Pro Display',
+        fontWeight: FontWeight.w600,
+        fontSize: 17,
+        color: AppColors.lightTextPrimary,
+      ),
+      navLargeTitleTextStyle: TextStyle(
+        fontFamily: '.SF Pro Display',
+        fontWeight: FontWeight.w700,
+        fontSize: 34,
+        color: AppColors.lightTextPrimary,
+      ),
+      tabLabelTextStyle: TextStyle(fontFamily: '.SF Pro Text', fontSize: 10),
+    ),
+  );
+
+  static const CupertinoThemeData cupertinoLDark = CupertinoThemeData(
+    brightness: Brightness.dark,
+    primaryColor: AppColors.primary,
+    scaffoldBackgroundColor: AppColors.background,
+    barBackgroundColor: Color(0xFF1C1C1E),
+    textTheme: CupertinoTextThemeData(
+      primaryColor: AppColors.primary,
+      textStyle: TextStyle(
+        fontFamily: '.SF Pro Text',
+        color: AppColors.textPrimary,
+        fontSize: 17,
+      ),
+      navTitleTextStyle: TextStyle(
+        fontFamily: '.SF Pro Display',
+        fontWeight: FontWeight.w600,
+        fontSize: 17,
+        color: AppColors.textPrimary,
+      ),
+      navLargeTitleTextStyle: TextStyle(
+        fontFamily: '.SF Pro Display',
+        fontWeight: FontWeight.w700,
+        fontSize: 34,
+        color: AppColors.textPrimary,
+      ),
+      tabLabelTextStyle: TextStyle(fontFamily: '.SF Pro Text', fontSize: 10),
+    ),
+  );
+
+  // ─── Material wrapper themes (for BLoC listeners etc.) ────────────────────
+
+  static ThemeData get dark => _buildMaterial(Brightness.dark);
+  static ThemeData get light => _buildMaterial(Brightness.light);
+
+  static ThemeData _buildMaterial(Brightness brightness) {
+    final isDark = brightness == Brightness.dark;
     return ThemeData(
       useMaterial3: true,
-      scaffoldBackgroundColor: AppColors.background,
-      colorScheme: const ColorScheme(
-        brightness: Brightness.dark,
+      brightness: brightness,
+      scaffoldBackgroundColor: isDark
+          ? AppColors.background
+          : AppColors.lightBackground,
+      colorScheme: ColorScheme(
+        brightness: brightness,
         primary: AppColors.primary,
         onPrimary: Colors.white,
         secondary: AppColors.accent,
-        onSecondary: Colors.black,
+        onSecondary: Colors.white,
         error: AppColors.error,
         onError: Colors.white,
-        surface: AppColors.surface,
-        onSurface: AppColors.textPrimary,
+        surface: isDark ? AppColors.surface : AppColors.lightSurface,
+        onSurface: isDark ? AppColors.textPrimary : AppColors.lightTextPrimary,
       ),
-      textTheme: textTheme.apply(
-        bodyColor: AppColors.textPrimary,
-        displayColor: AppColors.textPrimary,
-      ),
-      appBarTheme: const AppBarTheme(
+      appBarTheme: AppBarTheme(
         backgroundColor: Colors.transparent,
         elevation: 0,
         scrolledUnderElevation: 0,
-        centerTitle: false,
-        titleTextStyle: TextStyle(
-          fontSize: 22,
-          fontWeight: FontWeight.w700,
-          color: AppColors.textPrimary,
-        ),
+        foregroundColor: isDark
+            ? AppColors.textPrimary
+            : AppColors.lightTextPrimary,
       ),
-      cardTheme: CardThemeData(
-        color: AppColors.surface,
-        margin: EdgeInsets.zero,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(24),
-          side: const BorderSide(color: AppColors.border),
-        ),
-      ),
-      inputDecorationTheme: InputDecorationTheme(
-        filled: true,
-        fillColor: AppColors.surface,
-        hintStyle: const TextStyle(color: AppColors.textSecondary),
-        labelStyle: const TextStyle(color: AppColors.textSecondary),
-        contentPadding: const EdgeInsets.symmetric(
-          horizontal: 16,
-          vertical: 14,
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderSide: const BorderSide(color: AppColors.border),
-          borderRadius: BorderRadius.circular(16),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderSide: const BorderSide(color: AppColors.primary),
-          borderRadius: BorderRadius.circular(16),
-        ),
-        errorBorder: OutlineInputBorder(
-          borderSide: const BorderSide(color: AppColors.error),
-          borderRadius: BorderRadius.circular(16),
-        ),
-        focusedErrorBorder: OutlineInputBorder(
-          borderSide: const BorderSide(color: AppColors.error),
-          borderRadius: BorderRadius.circular(16),
-        ),
-      ),
-      elevatedButtonTheme: ElevatedButtonThemeData(
-        style: ElevatedButton.styleFrom(
-          backgroundColor: AppColors.primary,
-          foregroundColor: Colors.white,
-          minimumSize: const Size.fromHeight(56),
-          textStyle: const TextStyle(fontWeight: FontWeight.w700, fontSize: 16),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(18),
-          ),
-        ),
-      ),
-      snackBarTheme: const SnackBarThemeData(
+      snackBarTheme: SnackBarThemeData(
         behavior: SnackBarBehavior.floating,
-        backgroundColor: AppColors.surface,
-        contentTextStyle: TextStyle(color: AppColors.textPrimary),
+        backgroundColor: isDark ? AppColors.surface : AppColors.lightSurface,
+        contentTextStyle: TextStyle(
+          color: isDark ? AppColors.textPrimary : AppColors.lightTextPrimary,
+        ),
       ),
       dialogTheme: DialogThemeData(
-        backgroundColor: AppColors.surface,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      ),
-      bottomSheetTheme: const BottomSheetThemeData(
-        backgroundColor: AppColors.surface,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-        ),
-      ),
-    );
-  }
-
-  static ThemeData get light {
-    final textTheme = GoogleFonts.urbanistTextTheme();
-
-    return ThemeData(
-      useMaterial3: true,
-      scaffoldBackgroundColor: AppColors.lightBackground,
-      colorScheme: const ColorScheme(
-        brightness: Brightness.light,
-        primary: AppColors.primary,
-        onPrimary: Colors.white,
-        secondary: AppColors.accent,
-        onSecondary: Colors.black,
-        error: AppColors.error,
-        onError: Colors.white,
-        surface: AppColors.lightSurface,
-        onSurface: AppColors.lightTextPrimary,
-      ),
-      textTheme: textTheme.apply(
-        bodyColor: AppColors.lightTextPrimary,
-        displayColor: AppColors.lightTextPrimary,
-      ),
-      appBarTheme: const AppBarTheme(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        scrolledUnderElevation: 0,
-        centerTitle: false,
-        titleTextStyle: TextStyle(
-          fontSize: 22,
-          fontWeight: FontWeight.w700,
-          color: AppColors.lightTextPrimary,
-        ),
-      ),
-      cardTheme: CardThemeData(
-        color: AppColors.lightSurface,
-        margin: EdgeInsets.zero,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(24),
-          side: const BorderSide(color: AppColors.lightBorder),
-        ),
-      ),
-      inputDecorationTheme: InputDecorationTheme(
-        filled: true,
-        fillColor: AppColors.lightSurface,
-        hintStyle: const TextStyle(color: AppColors.lightTextSecondary),
-        labelStyle: const TextStyle(color: AppColors.lightTextSecondary),
-        contentPadding: const EdgeInsets.symmetric(
-          horizontal: 16,
-          vertical: 14,
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderSide: const BorderSide(color: AppColors.lightBorder),
-          borderRadius: BorderRadius.circular(16),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderSide: const BorderSide(color: AppColors.primary),
-          borderRadius: BorderRadius.circular(16),
-        ),
-        errorBorder: OutlineInputBorder(
-          borderSide: const BorderSide(color: AppColors.error),
-          borderRadius: BorderRadius.circular(16),
-        ),
-        focusedErrorBorder: OutlineInputBorder(
-          borderSide: const BorderSide(color: AppColors.error),
-          borderRadius: BorderRadius.circular(16),
-        ),
-      ),
-      elevatedButtonTheme: ElevatedButtonThemeData(
-        style: ElevatedButton.styleFrom(
-          backgroundColor: AppColors.primary,
-          foregroundColor: Colors.white,
-          minimumSize: const Size.fromHeight(56),
-          textStyle: const TextStyle(fontWeight: FontWeight.w700, fontSize: 16),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(18),
-          ),
-        ),
-      ),
-      snackBarTheme: const SnackBarThemeData(
-        behavior: SnackBarBehavior.floating,
-        backgroundColor: AppColors.lightSurface,
-        contentTextStyle: TextStyle(color: AppColors.lightTextPrimary),
-      ),
-      dialogTheme: DialogThemeData(
-        backgroundColor: AppColors.lightSurface,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      ),
-      bottomSheetTheme: const BottomSheetThemeData(
-        backgroundColor: AppColors.lightSurface,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-        ),
+        backgroundColor: isDark ? AppColors.surface : AppColors.lightSurface,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
       ),
     );
   }

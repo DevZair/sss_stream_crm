@@ -28,7 +28,8 @@ class ChatMessage {
     final direction = (json['direction'] ?? '').toString().toLowerCase();
     final isMe = direction == 'out';
 
-    final tsCandidate = json['timestamp'] ??
+    final tsCandidate =
+        json['timestamp'] ??
         json['created_at'] ??
         json['createdAt'] ??
         json['ts'] ??
@@ -44,14 +45,15 @@ class ChatMessage {
     final mediaPath = _pickMediaUrl(media);
     final fileName = _pickFileName(media);
 
-    final rawId = (json['id'] ??
-            json['_id'] ??
-            json['id_message'] ??
-            json['idMessage'] ??
-            json['message_ref'] ??
-            json['messageRef'] ??
-            '')
-        .toString();
+    final rawId =
+        (json['id'] ??
+                json['_id'] ??
+                json['id_message'] ??
+                json['idMessage'] ??
+                json['message_ref'] ??
+                json['messageRef'] ??
+                '')
+            .toString();
     final resolvedId = rawId.trim().isNotEmpty
         ? rawId
         : 'msg_${DateTime.now().millisecondsSinceEpoch}_${direction.hashCode}';

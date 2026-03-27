@@ -10,7 +10,12 @@ enum StorageKeys {
   languageCode('language_code'),
   fcmToken('fcm_token'),
   baseUrl('base_url'),
-  materialStatusCache('material_status_cache');
+  materialStatusCache('material_status_cache'),
+  firebaseUid('firebase_uid'),
+  currentUserName('current_user_name'),
+  currentFullName('current_full_name'),
+  currentInternalUserId('current_internal_user_id'),
+  authEmail('auth_email');
 
   const StorageKeys(this.key);
   final String key;
@@ -93,5 +98,57 @@ class DBService {
 
   static set baseUrl(String token) {
     $storage.setString(StorageKeys.baseUrl.name, token);
+  }
+
+  static String get firebaseUid {
+    return $storage.getString(StorageKeys.firebaseUid.name) ?? '';
+  }
+
+  static set firebaseUid(String value) {
+    $storage.setString(StorageKeys.firebaseUid.name, value);
+  }
+
+  static String get currentUserName {
+    return $storage.getString(StorageKeys.currentUserName.name) ?? '';
+  }
+
+  static set currentUserName(String value) {
+    $storage.setString(StorageKeys.currentUserName.name, value);
+  }
+
+  static String get currentFullName {
+    return $storage.getString(StorageKeys.currentFullName.name) ?? '';
+  }
+
+  static set currentFullName(String value) {
+    $storage.setString(StorageKeys.currentFullName.name, value);
+  }
+
+  static String get currentInternalUserId {
+    return $storage.getString(StorageKeys.currentInternalUserId.name) ?? '';
+  }
+
+  static set currentInternalUserId(String value) {
+    $storage.setString(StorageKeys.currentInternalUserId.name, value);
+  }
+
+  static String get authEmail {
+    return $storage.getString(StorageKeys.authEmail.name) ?? '';
+  }
+
+  static set authEmail(String value) {
+    $storage.setString(StorageKeys.authEmail.name, value);
+  }
+
+  static Future<void> clearSession() async {
+    await Future.wait([
+      $storage.remove(StorageKeys.accessToken.name),
+      $storage.remove(StorageKeys.refreshToken.name),
+      $storage.remove(StorageKeys.firebaseUid.name),
+      $storage.remove(StorageKeys.currentUserName.name),
+      $storage.remove(StorageKeys.currentFullName.name),
+      $storage.remove(StorageKeys.currentInternalUserId.name),
+      $storage.remove(StorageKeys.authEmail.name),
+    ]);
   }
 }

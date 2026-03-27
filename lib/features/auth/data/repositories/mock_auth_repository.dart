@@ -23,6 +23,10 @@ class MockAuthRepository implements AuthRepository {
 
     DBService.accessToken = session.accessToken;
     DBService.refreshToken = session.refreshToken;
+    DBService.firebaseUid = 'mock_$userId';
+    DBService.currentUserName = username;
+    DBService.currentFullName = fullName;
+    DBService.currentInternalUserId = userId;
 
     return session;
   }
