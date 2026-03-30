@@ -142,9 +142,3 @@ flutter run --dart-define=USE_MOCK_AUTH=true
 ```bash
 flutter test
 ```
-
-## License / portfolio
-
-Private / portfolio use unless you add an explicit license.
-
-If you are reviewing this as part of a portfolio, I can provide a short architecture walkthrough and a live demo flow.
